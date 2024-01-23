@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('https://randomuser.me/api?results=25');
+        setUsers(response.data.results);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Random User Address Book</h1>
+      <ul>
+        {users.map((user) => (
+          <li key={user.login.uuid}>
+            <img src={user.picture.thumbnail} alt={user.name.first} />
+            <div>
+              <strong>{`${user.name.first} ${user.name.last}`}</strong>
+              <p>Email: {user.email}</p>
+              <p>Phone: {user.phone}</p>
+              <p>
+                Address: {user.location.street.number} {user.location.street.name}, {user.location.city}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
